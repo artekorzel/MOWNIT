@@ -1,0 +1,21 @@
+set apps := a1 a2 a3;
+set drives := d1 d2 d3;
+set users := u1 u2;
+set app_params := user gen read time prior;
+set user_params := profile read write security access priority;
+set drive_params := read_s write_s size;
+param applications : 
+      user gen read time prior :=
+    a1  1  150  60  1   1
+    a2  2  120  180 1   3
+    a3  2  30  300  1   3;
+param phys_drives :
+        read_s write_s size :=
+    d1    200   250     200
+    d2    200   150     300
+    d3    400  200     100;
+param sys_users :
+        profile read write security access priority :=
+    u1  1       400   150     1       1      1
+    u2  2       200    50     2       0      3;
+

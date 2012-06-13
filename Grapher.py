@@ -12,7 +12,7 @@ def graph(graph_data):
         mult=graph_data[1][i].size
         j=0
         for app in solve_data[i]:
-            solve_data[i][j]*=mult
+            solve_data[i][j]*=float(mult)
             j+=1
         i+=1
     print solve_data

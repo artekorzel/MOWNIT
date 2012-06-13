@@ -20,8 +20,7 @@ from java.awt import GridLayout
 from javax.swing import JTable
 from javax.swing import JScrollPane
 from javax.swing import JOptionPane
-import gen
-import re
+import gen,re,Solve,Grapher
 users = []
 apps = []
 drives = []
@@ -94,7 +93,7 @@ class Creator(object):
     def createMenus(self):
         menuBar = JMenuBar()
         fileMenu = JMenu("File")
-        fileMenu.add(JMenuItem("Save data", actionPerformed=self.saveData))
+        fileMenu.add(JMenuItem("Solve", actionPerformed=self.solveData))
         menuBar.add(fileMenu)
         return menuBar
     
@@ -158,14 +157,12 @@ class Creator(object):
         buttonPanel.add(JButton("Remove drive", actionPerformed=self.removeData))
         drivesPanel.add(buttonPanel, BorderLayout.SOUTH)
         
-    def saveData(self, event):
+    def saveData(self, fileName):
         StaticContent.apps=[]
         StaticContent.drives=[]
         StaticContent.users=[]
-        fileChooser = JFileChooser()
-        fileChooser.showSaveDialog(None)
-        out = fileChooser.selectedFile
-        f = open(out.toString(), "w+b")
+        
+        f = open(fileName, "w+b")
         userModel=self.userTable.getModel()
         appsModel=self.appsTable.getModel()
         drivesModel=self.drivesTable.getModel()
@@ -238,6 +235,19 @@ class Creator(object):
         #    JOptionPane.showMessageDialog(None,"There was an error during writing - "+str(e2),"Error",JOptionPane.ERROR_MESSAGE);
         f.close()
         
+        
+    def solveData(self,event):
+        fileChooser = JFileChooser()
+        fileChooser.showSaveDialog(None)
+        out = fileChooser.selectedFile
+        self.saveData(out.toString())
+        grapherData=Solve.parser(Solve.python_solver(out.toString()))
+        print grapherData
+        tupla=(StaticContent.apps,StaticContent.drives,StaticContent.users,grapherData)
+        #tupla=([gen.app('a',1,11,11,11,0)],[gen.drive('a',11,11,121)],[],[[1.0]])
+        Grapher.graph(tupla)
+        
+    
     def mousceClick(self, event):
         column=self.userTable.getSelectedColumn()
         if (column == 0):

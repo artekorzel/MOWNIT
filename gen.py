@@ -110,8 +110,9 @@ param applications :
 	for u in users:
 		tekst+=u.ind+' '+str(u.profile)+' '+str(u.read_s)+' '+str(u.write_s)+' '+str(u.secur)+' '+str(u.access)+' '+str(u.prior)+'\n'
 
-	with open("./wynik.dat", 'w+') as plik:
-		plik.write(tekst)
+	f=open("./wynik.dat", 'w+')
+	f.write(tekst)
+	f.close()
 		
 	return (apps,drives,users)
 	

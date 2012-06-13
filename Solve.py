@@ -26,11 +26,17 @@ def python_solver(file_name):
 	#with open('./amplscript', 'r') as p:
 		#out=Popen(['./ampl'],stdout=PIPE,stdin=p).communicate()
 	out=Popen(['./ampl'],stdout=PIPE,stdin=PIPE,env=env).communicate(s1+file_name+s2)
-	return parser(out[0].split('@')[1])
+	return out[0].split('@')[1]
 
 def parser(solver_str):
-	disks_list=[]
-	
+	tab=[]	#dane dla graphera
+	tmp=solver_str.split('\n')[:-1]
+	for i in tmp:
+		tab.append(i.split(' ')[:-1])
+	for i in range(len(tab)):
+		for j in range(len(tab[i])):
+			tab[i][j]=float(tab[i][j])
+	return tab	
 
 if __name__=='__main__':
-	print python_solver(sys.argv[1]) #input file name .dat
+	print parser(python_solver(sys.argv[1])) #input file name .dat

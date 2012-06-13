@@ -30,4 +30,4 @@ def python_solver(file_name):
 	return out[0].split('@')[1]
 
 if __name__=='__main__':
-	print python_solver(sys.argv[1])
+	print python_solver(sys.argv[1]) #input file name .dat

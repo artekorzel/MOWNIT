@@ -20,6 +20,7 @@ from java.awt import GridLayout
 from javax.swing import JTable
 from javax.swing import JScrollPane
 from javax.swing import JOptionPane
+import gen
 import re
 users = []
 apps = []
@@ -60,6 +61,10 @@ set drive_params := read_s write_s size;\n'''
           read_s write_s size := \n'''
     param_users='''param sys_users :
           profile read write security access priority := \n'''
+    apps=[]
+    drives=[]
+    users=[]
+    
 
 def deb(event):
     print event.paramString
@@ -154,6 +159,9 @@ class Creator(object):
         drivesPanel.add(buttonPanel, BorderLayout.SOUTH)
         
     def saveData(self, event):
+        StaticContent.apps=[]
+        StaticContent.drives=[]
+        StaticContent.users=[]
         fileChooser = JFileChooser()
         fileChooser.showSaveDialog(None)
         out = fileChooser.selectedFile
@@ -187,12 +195,14 @@ class Creator(object):
                         time=appsModel.getValueAt(app_row,4)
                         apps_set+=(' '+name)
                         apps_table.append('%*s %-*s %-*s %-*s %-*s %-s\n' % (10,name,4,str(user_num),4,read_sec,3,write_sec,4,time,priority))
+                        StaticContent.apps.append(gen.app(name,user_num,write_sec,read_sec,time,priority))
                 profile=userModel.getValueAt(row,1)
                 read=userModel.getValueAt(row,2)
                 write=userModel.getValueAt(row,3)
                 security=Convert(userModel.getValueAt(row,4))
                 access=Convert(userModel.getValueAt(row,5))
                 users_table.append('%*s %-*s %-*s %-*s %-*s %-*s %-s\n' % (10,user,7,profile,4,read,5,write,8,security,6,access,priority))
+                StaticContent.users.append(gen.user(user,profile,read,write,security,access,priority))
                 user_num+=1
             users_set+=';\n'
             apps_set+=';\n'
@@ -204,6 +214,7 @@ class Creator(object):
                 write_s=drivesModel.getValueAt(row,2)
                 size=drivesModel.getValueAt(row,3)
                 drives_table.append('%*s %-*s %-*s %-s\n' % (10,name,6,read_s,7,write_s,size))
+                StaticContent.drives.append(gen.drive(name,read_s,write_s,size))
             drives_set+=';\n'
             f.write(apps_set)
             f.write(users_set)

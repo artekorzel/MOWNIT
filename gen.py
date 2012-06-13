@@ -58,7 +58,7 @@ param applications :
 	users=[]
 	
 	for i in range(1,numapps+1):
-		a=app(i,randint(1,numusers),randrange(50,500,10),randrange(50,500,10),randint(1,30),0)
+		a=app(str(i),randint(1,numusers),randrange(50,500,10),randrange(50,500,10),randint(1,30),0)
 		apps.append(a)
 		
 	ap2=range(numapps)
@@ -77,7 +77,7 @@ param applications :
 		r=max(m_r)
 		w=max(m_w)
 		s=sum(m_s,0)
-		d=drive(i,r,w,s)
+		d=drive(str(i),r,w,s)
 		drives.append(d)
 		
 	if len(ap2) > 0:
@@ -87,10 +87,10 @@ param applications :
 		r=max(m_r)
 		w=max(m_w)
 		s=sum(m_s,0)
-		d=drive(numdrives,r,w,s)
+		d=drive(str(numdrives),r,w,s)
 		drives.append(d)
 	else:
-		d=drive(numdrives,randrange(50,500,10),randrange(50,500,10),randrange(5000,10000,1000))
+		d=drive(str(numdrives),randrange(50,500,10),randrange(50,500,10),randrange(5000,10000,1000))
 		drives.append(d)
 		
 	for i in range(1,numusers+1):
@@ -98,20 +98,22 @@ param applications :
 		pr=randint(1,3)
 		for ap in a:
 			ap.prior=pr
-		u=user(i,randint(1,3),reduce(lambda x,y: x+y.read_s,a,0),reduce(lambda x,y: x+y.gen_s,a,0),randint(1,3),randint(1,2),pr)
+		u=user(str(i),randint(1,3),reduce(lambda x,y: x+y.read_s,a,0),reduce(lambda x,y: x+y.gen_s,a,0),randint(1,3),randint(1,2),pr)
 		users.append(u)
 		
 	for a in apps:
-		tekst+=str(a.ind)+' '+str(a.user)+' '+str(a.gen_s)+' '+str(a.read_s)+' '+str(a.time)+' '+str(a.prior)+'\n'
+		tekst+=a.ind+' '+str(a.user)+' '+str(a.gen_s)+' '+str(a.read_s)+' '+str(a.time)+' '+str(a.prior)+'\n'
 	tekst+=';\nparam phys_drives :\n\tread_s write_s size :=\n'
 	for d in drives:
-		tekst+=str(d.ind)+' '+str(d.read_s)+' '+str(d.write_s)+' '+str(d.size)+' '+'\n'
+		tekst+=d.ind+' '+str(d.read_s)+' '+str(d.write_s)+' '+str(d.size)+' '+'\n'
 	tekst+=';\nparam sys_users :\n\tprofile read write security access priority :=\n'
 	for u in users:
-		tekst+=str(u.ind)+' '+str(u.profile)+' '+str(u.read_s)+' '+str(u.write_s)+' '+str(u.secur)+' '+str(u.access)+' '+str(u.prior)+'\n'
+		tekst+=u.ind+' '+str(u.profile)+' '+str(u.read_s)+' '+str(u.write_s)+' '+str(u.secur)+' '+str(u.access)+' '+str(u.prior)+'\n'
 
 	with open("./wynik.dat", 'w+') as plik:
 		plik.write(tekst)
+		
+	return (apps,drives,users)
 	
 if __name__=='__main__':
 	random.seed()

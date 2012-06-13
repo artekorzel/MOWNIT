@@ -13,7 +13,6 @@ solve;
 printf "@";
 for{i in drives} 
 {
-printf "%s ", i; 
 for{j in apps}
 {
 printf "%f ", zuzycie[i,j];
@@ -27,7 +26,11 @@ def python_solver(file_name):
 	#with open('./amplscript', 'r') as p:
 		#out=Popen(['./ampl'],stdout=PIPE,stdin=p).communicate()
 	out=Popen(['./ampl'],stdout=PIPE,stdin=PIPE,env=env).communicate(s1+file_name+s2)
-	return out[0].split('@')[1]
+	return parser(out[0].split('@')[1])
+
+def parser(solver_str):
+	disks_list=[]
+	
 
 if __name__=='__main__':
 	print python_solver(sys.argv[1])

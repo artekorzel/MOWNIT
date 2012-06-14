@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#/usr/bin/env jython
 
 '''
 Created on May 29, 2012
@@ -11,8 +11,6 @@ from random import randint
 from random import randrange
 from random import choice
 import random,sys
-
-tekst='set apps := '
 
 class app(object):
 	def __init__(self,i,us,g_s,r_s,t,pr):
@@ -40,19 +38,19 @@ class user(object):
 		self.access=acc
 		self.prior=pr
 
-def dodaj1(doilu):
-	global tekst
+def dodaj1(tekst,doilu):
 	for i in xrange(doilu):
 		tekst+=str(i+1)
 		tekst+=' '
+	return tekst
 
 def generuj(numapps,numdrives,numusers):
-	global tekst
-	dodaj1(numapps)
+	tekst='set apps := '
+	tekst=dodaj1(tekst,numapps)
 	tekst+=';\nset drives := '
-	dodaj1(numdrives)
+	tekst=dodaj1(tekst,numdrives)
 	tekst+=';\nset users := '
-	dodaj1(numusers)
+	tekst=dodaj1(tekst,numusers)
 	tekst+=''';\nset app_params := user gen read time prior;
 set user_params := profile read write security access priority;
 set drive_params := read_s write_s size;
@@ -118,9 +116,39 @@ param applications :
 
 	f=open("./wynik.dat", 'w+')
 	f.write(tekst)
-	f.close()
-		
+	f.close()		
 	return (apps,drives,users)
+
+def readFile(fileName):
+	f=open(fileName,"r")
+	apps=[]
+	drives=[]
+	users=[]
+	file=""
+	for line in f:
+		file+=line
+	sets=file.split(";")
+	f.close()
+	
+	ap=sets[6].split("=")[1].split("\n")
+	for a in ap:
+		if len(a.strip()) > 0:
+			spl=a.split()
+			apps.append(app(spl[0],spl[1],spl[2],spl[3],spl[4],spl[5]))
+		
+	dr=sets[7].split("=")[1].split("\n")
+	for d in dr:
+		if len(d.strip()) > 0:
+			spl=d.split()
+			drives.append(drive(spl[0],spl[1],spl[2],spl[3]))
+		
+	us=sets[8].split("=")[1].split("\n")
+	print us
+	for u in us:
+		if len(u.strip()) > 0:
+			spl=u.split()
+			users.append(user(spl[0],spl[1],spl[2],spl[3],spl[4],spl[5],spl[6]))
+	return apps,drives,users
 	
 if __name__=='__main__':
 	random.seed()

@@ -21,6 +21,14 @@ param applications :
         13 6    200  295 8    1
         14 6    310  100 14   1
 ;
+param phys_drives :
+          read_s write_s size := 
+         1 160    420     30500
+         2 230    300     23000
+         3 100    500     19000
+         4 420    245     21500
+         5 350    250     10500
+;
 param sys_users :
           profile read write security access priority := 
          1 1       1200 3400  1        1      2
@@ -29,12 +37,4 @@ param sys_users :
          4 2       5645 17720 2        0      2
          5 1       16350 17920 1        1      2
          6 1       5940 3760  3        1      1
-;
-param phys_drives :
-          read_s write_s size := 
-         1 160    420     30500
-         2 230    300     23000
-         3 100    500     19000
-         4 420    245     21500
-         5 350    250     10500
 ;

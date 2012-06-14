@@ -1,5 +1,11 @@
 #/usr/bin/env python
 
+'''
+Created on May 29, 2012
+
+@author: andrzej&artur
+'''
+
 from random import seed
 from random import randint
 from random import randrange

@@ -1,7 +1,9 @@
+#/usr/bin/env jython
+
 '''
 Created on May 15, 2012
 
-@author: andrzej
+@author: andrzej&artur
 '''
 from javax.swing import JFrame
 from javax.swing import JMenuBar
@@ -20,7 +22,7 @@ from java.awt import GridLayout
 from javax.swing import JTable
 from javax.swing import JScrollPane
 from javax.swing import JOptionPane
-import gen, re, Solve, Grapher
+import gen, re, Solve
 from subprocess import Popen,PIPE
 users = []
 apps = []
@@ -95,6 +97,7 @@ class Creator(object):
         menuBar = JMenuBar()
         fileMenu = JMenu("File")
         fileMenu.add(JMenuItem("Solve", actionPerformed=self.solveData))
+        fileMenu.add(JMenuItem("Generate", actionPerformed=self.randomData))
         menuBar.add(fileMenu)
         return menuBar
     
@@ -250,7 +253,7 @@ class Creator(object):
         drives=StaticContent.drives
         users=StaticContent.users
         #apps = [gen.app('z', 1, 11, 20, 20, 5),gen.app('z2', 1, 11, 15, 15, 4)]
-       # drives = [gen.drive('a', 100, 100, 100),gen.drive('b',60,60,60)]
+        #drives = [gen.drive('a', 100, 100, 100),gen.drive('b',60,60,60)]
         #grapherData=[[1.0]]
         i = 0
         for drive in drives:
@@ -277,6 +280,38 @@ class Creator(object):
         f.close()
         out=Popen(['gnuplot','-persist','gnuplot_script'],stdout=PIPE).communicate()
         
+    def randomData(self,event):
+        apps,drives,users=gen.generuj(20,6,10);
+        grapherData = Solve.parser(Solve.python_solver("./wynik.dat"))
+        #print grapherData
+        #creating temporary file for usual Python script
+        #apps = [gen.app('z', 1, 11, 20, 20, 5),gen.app('z2', 1, 11, 15, 15, 4)]
+       # drives = [gen.drive('a', 100, 100, 100),gen.drive('b',60,60,60)]
+        #grapherData=[[1.0]]
+        i = 0
+        for drive in drives:
+            mult = drives[i].size
+            j = 0
+            for app in apps:
+                grapherData[i][j] *= float(mult)
+                j += 1
+            i += 1
+        #created graph-ready array of data, writing to temporary file
+        f = open("plotData", "w")
+        #grapherData=[[2.0,3.5],[1.0,3.0]]
+        i_range = len(grapherData)
+        j_range = len(grapherData[0])
+        for i in range(i_range):
+            for j in range(j_range):
+                    f.write(str(float(i)) + ' ' + str(float(j)) + ' ' + str(grapherData[i][j]) + '\n')
+                    f.write(str(float(i)) + ' ' + str(float(j + 1)) + ' ' + str(grapherData[i][j]) + '\n')
+            f.write('\n')
+            for j in range(j_range):
+                    f.write(str(float(i+1)) + ' ' + str(float(j)) + ' ' + str(grapherData[i][j]) + '\n')
+                    f.write(str(float(i+1)) + ' ' + str(float(j + 1)) + ' ' + str(grapherData[i][j]) + '\n')
+            f.write('\n')
+        f.close()
+        out=Popen(['gnuplot','-persist','gnuplot_script'],stdout=PIPE).communicate()
     
     def mousceClick(self, event):
         column = self.userTable.getSelectedColumn()
@@ -284,7 +319,6 @@ class Creator(object):
             row = self.userTable.getSelectedRow()
             self.tempUserName = self.userTable.getModel().getValueAt(self.userTable.convertRowIndexToModel(row),
                                                                    self.userTable.convertColumnIndexToModel(column))
-            
         
     def addData(self, event):
         if (event.actionCommand == 'Add user'):

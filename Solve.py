@@ -1,3 +1,11 @@
+#/usr/bin/env python
+
+'''
+Created on May 29, 2012
+
+@author: andrzej&artur
+'''
+
 from subprocess import Popen,PIPE
 import sys
 from os import environ

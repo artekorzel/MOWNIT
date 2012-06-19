@@ -1,0 +1,6 @@
+set xlabel 'app'
+set ylabel 'size'
+set xtics 1
+set yrange [0:]
+plot "plotData" with boxes
+replot

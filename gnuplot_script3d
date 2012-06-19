@@ -1,0 +1,8 @@
+set xlabel 'drive'
+set ylabel 'app'
+set zlabel 'taken'
+set xtics 1
+set ytics 1
+set hidden3d
+splot "plotData" with lines
+replot

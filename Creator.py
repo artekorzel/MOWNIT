@@ -17,13 +17,14 @@ from javax.swing.table import DefaultTableModel
 from javax.swing import JTextField
 from javax.swing import DefaultCellEditor
 from javax.swing import JComboBox
+from javax.swing import JSplitPane
 from java.awt import BorderLayout
 from java.awt import GridLayout
 from javax.swing import JTable
 from javax.swing import JScrollPane
 from javax.swing import JOptionPane
 import gen, re, Solve
-from subprocess import Popen,PIPE
+from subprocess import Popen, PIPE
 users = []
 apps = []
 drives = []
@@ -243,85 +244,39 @@ class Creator(object):
         
         
     def solveData(self, event):
+        self.graphFlag=1
         fileChooser = JFileChooser()
         fileChooser.showSaveDialog(None)
         out = fileChooser.selectedFile
-        self.saveData(out.toString())
-        #grapherData = Solve.parser(Solve.python_solver(out.toString()))
-        grapherData = Solve.parser(Solve.python_solver(out.toString()))
-        #print grapherData
-        #creating temporary file for usual Python script
-        apps=StaticContent.apps
-        drives=StaticContent.drives
-        users=StaticContent.users
-        #apps = [gen.app('z', 1, 11, 20, 20, 5),gen.app('z2', 1, 11, 15, 15, 4)]
-        #drives = [gen.drive('a', 100, 100, 100),gen.drive('b',60,60,60)]
-        #grapherData=[[1.0]]
-        i = 0
-        for drive in drives:
-            mult = drives[i].size
-            j = 0
-            for app in apps:
-                grapherData[i][j] *= float(mult)
-                j += 1
-            i += 1
-        #created graph-ready array of data, writing to temporary file
-        f = open("plotData", "w")
-        #grapherData=[[2.0,3.5],[1.0,3.0]]
-        i_range = len(grapherData)
-        j_range = len(grapherData[0])
-        for i in range(i_range):
-            for j in range(j_range):
-                    f.write(str(float(i)) + ' ' + str(float(j)) + ' ' + str(grapherData[i][j]) + '\n')
-                    f.write(str(float(i)) + ' ' + str(float(j + 1)) + ' ' + str(grapherData[i][j]) + '\n')
-            f.write('\n')
-            for j in range(j_range):
-                    f.write(str(float(i+1)) + ' ' + str(float(j)) + ' ' + str(grapherData[i][j]) + '\n')
-                    f.write(str(float(i+1)) + ' ' + str(float(j + 1)) + ' ' + str(grapherData[i][j]) + '\n')
-            f.write('\n')
-        f.close()
-        out=Popen(['gnuplot','-persist','gnuplot_script'],stdout=PIPE).communicate()
+        if out != None:
+            self.saveData(out.toString())
+            #grapherData = Solve.parser(Solve.python_solver(out.toString()))
+            grapherData = Solve.parser(Solve.python_solver(out.toString()))
+            #print grapherData
+            #creating temporary file for usual Python script
+            apps = StaticContent.apps
+            drives = StaticContent.drives
+            users = StaticContent.users
+            #apps = [gen.app('z', 1, 11, 20, 20, 5),gen.app('z2', 1, 11, 15, 15, 4)]
+            #drives = [gen.drive('a', 100, 100, 100),gen.drive('b',60,60,60)]
+            #grapherData=[[1.0]]
+            i = 0
+            for drive in drives:
+                mult = drive.size
+                j = 0
+                for app in apps:
+                    grapherData[i][j] *= float(mult)
+                    j += 1
+                i += 1
+            self.grapherWindow(grapherData, (apps,drives,users))
         
-    def randomData(self,event):
-        apps,drives,users=gen.generuj(20,10,10);
+    def randomData(self, event):
+        self.graphFlag=0
+        apps, drives, users = gen.generuj(20, 10, 10);
         grapherData = Solve.parser(Solve.python_solver("./wynik.dat"))
         #print grapherData
         #creating temporary file for usual Python script
         #apps = [gen.app('z', 1, 11, 20, 20, 5),gen.app('z2', 1, 11, 15, 15, 4)]
-       # drives = [gen.drive('a', 100, 100, 100),gen.drive('b',60,60,60)]
-        #grapherData=[[1.0]]
-        i = 0
-        for drive in drives:
-            mult = drives[i].size
-            j = 0
-            for app in apps:
-                grapherData[i][j] *= float(mult)
-                j += 1
-            i += 1
-        #created graph-ready array of data, writing to temporary file
-        f = open("plotData", "w")
-        #grapherData=[[2.0,3.5],[1.0,3.0]]
-        i_range = len(grapherData)
-        j_range = len(grapherData[0])
-        for i in range(i_range):
-            for j in range(j_range):
-                    f.write(str(float(i)) + ' ' + str(float(j)) + ' ' + str(grapherData[i][j]) + '\n')
-                    f.write(str(float(i)) + ' ' + str(float(j + 1)) + ' ' + str(grapherData[i][j]) + '\n')
-            f.write('\n')
-            for j in range(j_range):
-                    f.write(str(float(i+1)) + ' ' + str(float(j)) + ' ' + str(grapherData[i][j]) + '\n')
-                    f.write(str(float(i+1)) + ' ' + str(float(j + 1)) + ' ' + str(grapherData[i][j]) + '\n')
-            f.write('\n')
-        f.close()
-        out=Popen(['gnuplot','-persist','gnuplot_script'],stdout=PIPE).communicate()
-        
-    def readFromFile(self,event):
-        fileChooser = JFileChooser()
-        fileChooser.showSaveDialog(None)
-        out = fileChooser.selectedFile
-        apps,drives,users = gen.readFile(out.toString())
-        grapherData = Solve.parser(Solve.python_solver(out.toString()))
-        #apps = [gen.app('z', 1, 11, 20, 20, 5),gen.app('z2', 1, 11, 15, 15, 4)]
         #drives = [gen.drive('a', 100, 100, 100),gen.drive('b',60,60,60)]
         #grapherData=[[1.0]]
         i = 0
@@ -343,19 +298,40 @@ class Creator(object):
                     f.write(str(float(i)) + ' ' + str(float(j + 1)) + ' ' + str(grapherData[i][j]) + '\n')
             f.write('\n')
             for j in range(j_range):
-                    f.write(str(float(i+1)) + ' ' + str(float(j)) + ' ' + str(grapherData[i][j]) + '\n')
-                    f.write(str(float(i+1)) + ' ' + str(float(j + 1)) + ' ' + str(grapherData[i][j]) + '\n')
+                    f.write(str(float(i + 1)) + ' ' + str(float(j)) + ' ' + str(grapherData[i][j]) + '\n')
+                    f.write(str(float(i + 1)) + ' ' + str(float(j + 1)) + ' ' + str(grapherData[i][j]) + '\n')
             f.write('\n')
-        f.close()
-        out=Popen(['gnuplot','-persist','gnuplot_script'],stdout=PIPE).communicate()
+        self.grapherWindow(grapherData, (apps, drives, users))
+        #f.close()
+        #out = Popen(['gnuplot', '-persist', 'gnuplot_script'], stdout=PIPE).communicate()
         
-    def readDisk2d(self,event):
-        id_dysk=0
+    def readFromFile(self, event):
+        self.graphFlag=1
+        fileChooser = JFileChooser()
+        fileChooser.showSaveDialog(None)
+        out = fileChooser.selectedFile
+        apps, drives, users = gen.readFile(out.toString())
+        grapherData = Solve.parser(Solve.python_solver(out.toString()))
+        #apps = [gen.app('z', 1, 11, 20, 20, 5),gen.app('z2', 1, 11, 15, 15, 4)]
+        #drives = [gen.drive('a', 100, 100, 100),gen.drive('b',60,60,60)]
+        #grapherData=[[1.0]]
+        i = 0
+        for drive in drives:
+            mult = drive.size
+            j = 0
+            for app in apps:
+                grapherData[i][j] *= float(mult)
+                j += 1
+            i += 1
+        #created graph-ready array of data, writing to temporary file
+        self.grapherWindow(grapherData, (apps,drives,users))
+    def readDisk2d(self, event):
+        id_dysk = 0
         
         fileChooser = JFileChooser()
         fileChooser.showSaveDialog(None)
         out = fileChooser.selectedFile
-        apps,drives,users = gen.readFile(out.toString())
+        apps, drives, users = gen.readFile(out.toString())
         grapherData = Solve.parser(Solve.python_solver(out.toString()))
         #apps = [gen.app('z', 1, 11, 20, 20, 5),gen.app('z2', 1, 11, 15, 15, 4)]
         #drives = [gen.drive('a', 100, 100, 100),gen.drive('b',60,60,60)]
@@ -376,7 +352,7 @@ class Creator(object):
         for j in range(j_range):
             f.write(str(float(j)) + ' ' + str(float(grapherData[id_dysk][j])) + '\n')
         f.close()
-        out=Popen(['gnuplot','-persist','gnuplot_script2d'],stdout=PIPE).communicate()
+        out = Popen(['gnuplot', '-persist', 'gnuplot_script2d'], stdout=PIPE).communicate()
     
     def mousceClick(self, event):
         column = self.userTable.getSelectedColumn()
@@ -444,6 +420,102 @@ class Creator(object):
                 else:
                     self.userTable.getModel().setValueAt('0', row, 2)
                     self.userTable.getModel().setValueAt('0', row, 3)
-                    
+    
+    #show simple window, in which user can choose which disk/application graph he or she or it wants to see
+    #apps, drives, users
+    def grapherWindow(self, data, tupla):
+        self.__grapherWindow = JFrame('Grapher', defaultCloseOperation=JFrame.DISPOSE_ON_CLOSE, size=(300, 300)
+                             , layout=GridLayout(2, 1))
+        optionList = []
+        i = 1
+        for disk in tupla[1]:
+            optionList.append("disk: " + disk.ind)
+            i += 1
+        i = 1
+        for app in tupla[0]:
+            optionList.append("application: " + app.ind)
+            i += 1
+        optionList.append("overall")
+        self.data=data
+        self.tupla=tupla
+        self.grapherButton = JButton("generate graph",actionPerformed=self.generateGraphAction)
+        self.iterationButton= JButton("next iteration",actionPerformed=self.nextIterationAction)
+        splitPane = JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                           self.grapherButton, self.iterationButton);
+        splitPane.setDividerSize(0)
+        splitPane.setResizeWeight(0.5)
+        self.grapherBox = JComboBox(optionList)
+        self.__grapherWindow.add(self.grapherBox)
+        self.__grapherWindow.add(splitPane)
+        self.__grapherWindow.visible = 1
+        self.__grapherWindow.pack()
+       
+    def generateGraphAction(self,event):
+        opt=self.grapherBox.getSelectedItem()
+        #index of the searched element in the data array
+        i=0
+        if re.match("disk: .*",opt) is not None:
+            opt=opt[6:]
+            for drive in self.tupla[1]:
+                if opt==drive.ind:
+                    break
+                i+=1
+            f = open("plotData", "w")
+            #index of the application
+            j=1
+            for app in self.data[i]:
+                f.write(str(j)+' '+str(app)+'\n')
+                j+=1
+            f.close()
+            Popen(['gnuplot', '-persist', 'gnuplot_script2d_drive'], stdout=PIPE).communicate()
+        elif re.match("application:.*",opt):
+            opt=opt[13:]
+            for app in self.tupla[0]:
+                if opt==app.ind:
+                    break
+                i+=1
+            print i
+            f = open("plotData", "w")
+            #index of the application
+            j=1
+            for drive in self.data:
+                f.write(str(j)+' '+str(drive[i])+'\n')
+                j+=1
+            f.close()
+            Popen(['gnuplot', '-persist', 'gnuplot_script2d_app'], stdout=PIPE).communicate()
+        else:
+            i_range = len(self.data)
+            j_range = len(self.data[0])
+            f = open("plotData", "w")
+            for i in range(i_range):
+                for j in range(j_range):
+                    f.write(str(float(i)) + ' ' + str(float(j)) + ' ' + str(self.data[i][j]) + '\n')
+                    f.write(str(float(i)) + ' ' + str(float(j + 1)) + ' ' + str(self.data[i][j]) + '\n')
+                f.write('\n')
+                for j in range(j_range):
+                    f.write(str(float(i + 1)) + ' ' + str(float(j)) + ' ' + str(self.data[i][j]) + '\n')
+                    f.write(str(float(i + 1)) + ' ' + str(float(j + 1)) + ' ' + str(self.data[i][j]) + '\n')
+                f.write('\n')
+            f.close()
+            Popen(['gnuplot', '-persist', 'gnuplot_script3d'], stdout=PIPE).communicate()
+    def nextIterationAction(self,event):
+        self.tupla=gen.generuj(20, 10, 10)
+        self.data=Solve.parser(Solve.python_solver("./wynik.dat"))
+        i = 0
+        for drive in self.tupla[1]:
+            mult = drive.size
+            j = 0
+            for app in self.tupla[0]:
+                self.data[i][j] *= float(mult)
+                j += 1
+            i += 1
+        if self.graphFlag==1:
+            self.grapherBox.removeAllItems()
+            for disk in self.tupla[1]:
+                self.grapherBox.addItem("disk: " + disk.ind)
+            for app in self.tupla[0]:
+                self.grapherBox.addItem("application: " + app.ind)
+            self.grapherBox.addItem("overall")
+            self.graphFlag=0
 if __name__ == "__main__":    
     c = Creator()

@@ -1,5 +1,0 @@
-set xlabel 'app'
-set ylabel 'size'
-set xtics 1
-plot "plotData" with boxes
-replot

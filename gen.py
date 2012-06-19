@@ -75,15 +75,18 @@ param applications :
 				k=choice(ap2)
 				ap2.remove(k)
 				apps2.append(k)
-		m_w=[apps[a].gen_s for a in apps2]
-		m_s=[apps[a].gen_s*apps[a].time for a in apps2]
-		m_r=[apps[a].read_s for a in apps2]
-		r=max(m_r)
-		w=max(m_w)
-		s=sum(m_s,0)
-		d=drive(str(i),r,w,s)
-		drives.append(d)
-		
+		if len(apps2) > 0:	
+			m_w=[apps[a].gen_s for a in apps2]
+			m_s=[apps[a].gen_s*apps[a].time for a in apps2]
+			m_r=[apps[a].read_s for a in apps2]
+			r=max(m_r)
+			w=max(m_w)
+			s=sum(m_s,0)
+			d=drive(str(i),r,w,s)
+			drives.append(d)
+		else:
+			d=drive(str(numdrives),randrange(50,500,10),randrange(50,500,10),randrange(5000,10000,1000))
+			drives.append(d)
 	if len(ap2) > 0:
 		m_w=[apps[a].gen_s for a in ap2]
 		m_s=[apps[a].gen_s*apps[a].time for a in ap2]
@@ -143,7 +146,7 @@ def readFile(fileName):
 			drives.append(drive(spl[0],spl[1],spl[2],spl[3]))
 		
 	us=sets[8].split("=")[1].split("\n")
-	print us
+	#print us
 	for u in us:
 		if len(u.strip()) > 0:
 			spl=u.split()

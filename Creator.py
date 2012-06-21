@@ -100,7 +100,6 @@ class Creator(object):
         fileMenu.add(JMenuItem("Solve", actionPerformed=self.solveData))
         fileMenu.add(JMenuItem("Generate", actionPerformed=self.randomData))
         fileMenu.add(JMenuItem("From file", actionPerformed=self.readFromFile))
-        fileMenu.add(JMenuItem("Disk0 from file", actionPerformed=self.readDisk2d))
         menuBar.add(fileMenu)
         return menuBar
     
